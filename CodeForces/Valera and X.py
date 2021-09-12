@@ -1,3 +1,4 @@
+#solved
 def parseInput():
     n = int(input())
     slipOfPaper = []
@@ -13,8 +14,8 @@ def solve(paper, n):
         return False
     isXDiagonal = True
     isXInverted = True
-    for i in range(1, n):
-        if (paper[i][i] != diagLetter) or (paper[n - i - 1][n - i - 1] != diagLetter):
+    for i in range(n):
+        if (paper[i][i] != diagLetter) or (paper[i][n - i - 1] != diagLetter):
             isXDiagonal = False
             break
         
@@ -24,6 +25,7 @@ def solve(paper, n):
                 continue
             if(invertLetter != paper[i][j]):
                 isXInverted = False
+                break
     
     return (isXDiagonal and isXInverted)
 
@@ -47,4 +49,4 @@ def anotherSolve(paper, n):
 
 
 inp = parseInput()
-print("YES" if anotherSolve(inp[0], inp[1]) else "NO")
+print("YES" if solve(inp[0], inp[1]) else "NO")
