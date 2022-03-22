@@ -11,6 +11,7 @@ public class Solution {
             int indToRemove = 0;
             if(maxmizing)
             {
+                maxmizing.
                 int aliceSumWithLeftStoneRemd = aliceSum + (currSum - stones[leftmostStone]);
                 int aliceSumWithRightStoneRemd = aliceSum + (currSum - stones[rightmostStone]);
                 if(aliceSumWithRightStoneRemd > aliceSumWithLeftStoneRemd)
