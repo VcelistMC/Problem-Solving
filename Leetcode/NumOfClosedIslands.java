@@ -2,7 +2,7 @@
  * Time: O(n) -> where n is the number of cells in the grid
  * Space: O(d) -> where d is the depth of the deepest path
  */
-class Solution {
+class NumOfClosedIslands {
     public int closedIsland(int[][] grid) {
         int count = 0;
         for (int i = 0; i < grid.length; i++) {
