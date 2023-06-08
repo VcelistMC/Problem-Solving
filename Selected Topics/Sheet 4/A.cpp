@@ -11,10 +11,9 @@ typedef vector<int> vi;
 #define outputVec(x) for(int i = 0; i < x.size(); i++) cout << x[i] << endl
 #define print(x) cout << x << endl
 
-vi tokenize(string line, int &tapeLength, int &numTracks, vi &tracks){
+void tokenize(string line, int &tapeLength, int &numTracks, vi &tracks){
     stringstream ss(line);
     string token;
-    vi taken;
     while(getline(ss, token, ' ')){
         if(tapeLength == -1){
             tapeLength = stoi(token);
@@ -26,51 +25,39 @@ vi tokenize(string line, int &tapeLength, int &numTracks, vi &tracks){
         }
         else {
             tracks.push_back(stoi(token));
-            taken.push_back(0);
         }
     }
-    return taken;
 }
-int currMax = -1;
-vi currMaxTaken;
-int solve(int tapeLength, vi &tracks, int n, int curr, int maxTape, vi &takenTracks){
-    if(tapeLength == 0 || curr == n){
-        if(currMax < maxTape - tapeLength){
-            currMax = maxTape - tapeLength;
-            currMaxTaken = takenTracks;
+vi sol, best, tracks;
+int ans;
+
+void recurs(int i, int curr, int numTracks, int tapeLength){
+    if(i == numTracks){
+        if(curr > ans){
+            ans = curr;
+            best.clear();
+            for(auto num: sol) best.push_back(num);
         }
-        return 0;
+        return;
     }
+    recurs(i+1, curr, numTracks, tapeLength);
 
-    if(tracks[curr] > tapeLength) 
-        return solve(tapeLength, tracks, n, curr+1, maxTape, takenTracks);
-
-    takenTracks.push_back(tracks[curr]);
-    int with = tracks[curr] + solve(tapeLength - tracks[curr], tracks, n, curr+1, maxTape, takenTracks);
-    takenTracks.pop_back();
-    int without = solve(tapeLength, tracks, n, curr+1, maxTape, takenTracks);
-
-    return max(with, without);
+    if(tracks[i]+curr <= tapeLength){
+        sol.push_back(tracks[i]);
+        recurs(i+1, curr+tracks[i], numTracks, tapeLength);
+        sol.pop_back();
+    }
 }
 
 void solve(string line)
 {
     int tapeLength = -1, numTracks = -1;
-    vi tracks, takenTracks;
-    currMaxTaken.clear();
-    vi isTaken = tokenize(line, tapeLength, numTracks, tracks);
-
-    int ans = solve(tapeLength, tracks, numTracks, 0, tapeLength, takenTracks);
-    if(ans == tapeLength){
-        for(auto i: tracks){
-            cout << i << " ";
-        }    
-    }else{
-        for(auto i: currMaxTaken){
-            cout << i << " ";
-        }
-    }
-    cout << "sum:" << ans << endl;
+    sol.clear(); best.clear(); tracks.clear();
+    ans = 0;
+    tokenize(line, tapeLength, numTracks, tracks);
+    recurs(0,0, numTracks, tapeLength);
+    for(auto bestT: best) cout << bestT << " ";
+    cout << "sum:"<<ans << endl;
 }
 
 
