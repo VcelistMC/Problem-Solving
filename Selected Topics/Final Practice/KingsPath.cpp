@@ -22,43 +22,58 @@ bool inBounds(pii &p, vvi &grid){ return inBounds(p.first, p.second, grid); }
 const int first25Primes[25] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
 #define DEBUG_TEST_CASES 2
 
-ll solve(vi &theorms, vi &awake, int k){
-    ll currSum = 0;
-    ll maxSum = 0;
-    for(int i = 0; i < theorms.size(); i++){
-        if(awake[i]) currSum += theorms[i];
+class triplet{
+public:
+    int first = 0;
+    int second = 0;
+    int third = 0;
+    triplet(int a, int b, int c){
+        first = a;
+        second = b;
+        third = c;
     }
-    int i = 0, j = 0;
-    for(j = 0; j < k; j++) {
-        if(!awake[j]) currSum += theorms[j];
+    triplet(){
+        first = 0;
+        second = 0;
+        third = 0;
     }
-    j--;
-    maxSum = currSum;
 
-    while(j < theorms.size()){
-        if(!awake[i]){
-            currSum -= theorms[i];
+    bool operator<(const triplet& other) const {
+        if (first < other.first) {
+            return true;
+        } else if (first == other.first) {
+            if (second < other.second) {
+                return true;
+            } else if (second == other.second) {
+                return third < other.third;
+            }
         }
-        i++;
-        j++;
-        if(!awake[j]){
-            currSum += theorms[j];
-        }
-        maxSum = max(maxSum, currSum);
+        return false;
     }
-    return maxSum;
-}
+};
+
 
 
 void solve()
 {
-    int n, k;
-    cin >> n >> k;
-    vi theorms(n), awake(n);
-    inputVec(theorms);
-    inputVec(awake);
-    ll ans = solve(theorms, awake, k);
-    print(ans);
+    pii start, end;
+    cin >> start.first >> start.second >> end.first >> end.second;
+    int n; cin >> n;
+    vector<triplet> seg(n);
+    triplet minSeg, maxSeg;
+    pii upperLeft, 
+    for(int i = 0; i < n; i++){
+        cin >> seg[i].first >> seg[i].second >> seg[i].third;
+        if(i == 0){
+            minSeg = seg[0], maxSeg = seg[0];
+        }
+
+        if(seg[i] < minSeg) minSeg = seg[i];
+        if(!(seg[i] < maxSeg)) maxSeg = seg[i];
+    }
+    cout << minSeg.first << " " << minSeg.second << " "  << minSeg.third << endl;
+    cout << maxSeg.first << " "  << maxSeg.second << " "  << maxSeg.third << endl;
+    cout << endl;
 }
 
 

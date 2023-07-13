@@ -20,45 +20,39 @@ bool inBounds(int x, int y, int n, int m){ return x >= 0 && y >= 0 && x < n && y
 bool inBounds(int x, int y, vvi &grid){ return inBounds(x, y, grid.size(), grid[0].size()); }
 bool inBounds(pii &p, vvi &grid){ return inBounds(p.first, p.second, grid); }
 const int first25Primes[25] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
-#define DEBUG_TEST_CASES 2
-
-ll solve(vi &theorms, vi &awake, int k){
-    ll currSum = 0;
-    ll maxSum = 0;
-    for(int i = 0; i < theorms.size(); i++){
-        if(awake[i]) currSum += theorms[i];
-    }
-    int i = 0, j = 0;
-    for(j = 0; j < k; j++) {
-        if(!awake[j]) currSum += theorms[j];
-    }
-    j--;
-    maxSum = currSum;
-
-    while(j < theorms.size()){
-        if(!awake[i]){
-            currSum -= theorms[i];
-        }
-        i++;
-        j++;
-        if(!awake[j]){
-            currSum += theorms[j];
-        }
-        maxSum = max(maxSum, currSum);
-    }
-    return maxSum;
-}
 
 
-void solve()
+ll dp[205][11][201];
+ll getCount(int currSum, int taken, int currInd, int k, int n, vi &nums){
+    if(taken == n){ return (currSum == 0? 1LL: 0LL); }  
+
+    if(currInd == nums.size()){
+        return 0LL;
+    };
+
+    ll& ans = dp[currInd][taken][currSum];
+    if(~ans) return ans;
+
+    ll take = getCount((currSum + nums[currInd]) % k, taken+1, currInd+1, k, n, nums);
+    ll leave = getCount(currSum, taken, currInd + 1, k, n, nums);   
+
+    return ans = (take + leave);
+}      
+
+void solve(int n, int q)
 {
-    int n, k;
-    cin >> n >> k;
-    vi theorms(n), awake(n);
-    inputVec(theorms);
-    inputVec(awake);
-    ll ans = solve(theorms, awake, k);
-    print(ans);
+    vi nums(n);
+    inputVec(nums);
+    memset(dp, -1, sizeof dp);
+    int m, d;
+    int i = 1;
+    while(q--){
+        cin >> d >> m;
+        memset(dp, -1, sizeof dp);
+        cout << "QUERY " << i << ": ";
+        i++;
+        print(getCount(0, 0, 0, d, m, nums));
+    }
 }
 
 
@@ -66,15 +60,15 @@ int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    cout.tie(NULL);
-    int T;
     #ifndef ONLINE_JUDGE
     freopen("../input.txt", "r", stdin);
     freopen("../output.txt", "w", stdout);
-    T=DEBUG_TEST_CASES;
-    #else
-    T=1;
     #endif
-    while(T--) {solve();}
+    int N, Q, i = 1;
+    while(cin >> N >> Q, N, Q) {
+        cout << "SET " << i << ":" << endl;
+        i++;
+        solve(N, Q);
+    }
     return 0;
 }

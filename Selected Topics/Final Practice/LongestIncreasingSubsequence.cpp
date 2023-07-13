@@ -9,6 +9,7 @@ using namespace std;
 #define print(x) cout << x << endl
 #define printGrid(vv) for(auto row: vv){for(auto cell: row){cout << cell << " ";}cout << endl;}
 #define ll long long
+#define exists(x, v) (v.find(x) != v.end())
 typedef vector<int> vi;
 typedef vector<vi> vvi;
 typedef vector<ll> vll;
@@ -22,36 +23,31 @@ bool inBounds(pii &p, vvi &grid){ return inBounds(p.first, p.second, grid); }
 const int first25Primes[25] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
 #define DEBUG_TEST_CASES 1
 
-int dp[101];
-int minFallingPathSum(vector<vector<int>>& matrix, int i, int j) {
-    if(i == matrix.size() - 1){
-        return matrix[i][j];
+int lengthOfLIS(vector<int>& nums) {
+    int i = 0, j = 1;
+    int n = nums.size();
+    vi dp(n, 1);
+
+    while(true){
+        if(i == j){
+            j++;
+            i = 0;
+        }
+        if(j == n) break;
+        if(nums[i] < nums[j]){
+            dp[j] = max(dp[j], dp[i]+1);
+        }
+        i++;
     }
-
-    int &ret = dp[i];
-    if(~ret) return ret;
-    
-    int bottomLeft = (j-1 >= 0)? minFallingPathSum(matrix, i + 1, j - 1): INT_MAX;
-    int bottomCenter = minFallingPathSum(matrix, i+1, j);
-    int bottomRight = (j+1 < matrix.size())? minFallingPathSum(matrix, i+1, j+1): INT_MAX;
-
-    return ret = (min({bottomLeft, bottomCenter, bottomRight}) + matrix[i][j]);
+    int ans= dp[0];
+    for(int num: dp) ans = max(ans, num);
+    return ans;
 }
 
 void solve()
 {
-    vvi matrix = {{2,1,3},{6,5,4},{7,8,9}};
-
-    int res = INT_MAX;
-    for(int i = 0; i < input.size(); i++){
-        res = min(
-            res,
-            minFallingPathSum(input, 0, i)
-        );
-    }
-
-    print(res);
-
+    vi in = {7,7,7,7,7,7,7};
+    print(lengthOfLIS(in));    
 }
 
 
@@ -62,8 +58,8 @@ int main()
     cout.tie(NULL);
     int T;
     #ifndef ONLINE_JUDGE
-    // freopen("../input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
+    freopen("../input.txt", "r", stdin);
+    freopen("../output.txt", "w", stdout);
     T=DEBUG_TEST_CASES;
     #else
     T=1;

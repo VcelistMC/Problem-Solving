@@ -8,57 +8,53 @@ using namespace std;
 #define outputVec(x) for(int i = 0; i < x.size(); i++) cout << x[i] << endl
 #define print(x) cout << x << endl
 #define printGrid(vv) for(auto row: vv){for(auto cell: row){cout << cell << " ";}cout << endl;}
+#define exists(x, v) (v.find(x) != v.end())
 #define ll long long
 typedef vector<int> vi;
 typedef vector<vi> vvi;
 typedef vector<ll> vll;
 typedef vector<vll> vvll;
 typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef vector<pii> vpii;
+typedef vector<pll> vpll;
 int dirs4[4][2] = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
 int dirs8[8][2] = { {-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1} };
 bool inBounds(int x, int y, int n, int m){ return x >= 0 && y >= 0 && x < n && y < m; }
 bool inBounds(int x, int y, vvi &grid){ return inBounds(x, y, grid.size(), grid[0].size()); }
 bool inBounds(pii &p, vvi &grid){ return inBounds(p.first, p.second, grid); }
 const int first25Primes[25] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
-#define DEBUG_TEST_CASES 2
 
-ll solve(vi &theorms, vi &awake, int k){
-    ll currSum = 0;
-    ll maxSum = 0;
-    for(int i = 0; i < theorms.size(); i++){
-        if(awake[i]) currSum += theorms[i];
+ll solve(int currInd, ll total, vpll &list, int money, vvll &dp){
+    if(currInd == list.size()){
+        return (total <= 2000 && total > money - 200)
+            ? -1e9
+            : 0;
     }
-    int i = 0, j = 0;
-    for(j = 0; j < k; j++) {
-        if(!awake[j]) currSum += theorms[j];
-    }
-    j--;
-    maxSum = currSum;
 
-    while(j < theorms.size()){
-        if(!awake[i]){
-            currSum -= theorms[i];
-        }
-        i++;
-        j++;
-        if(!awake[j]){
-            currSum += theorms[j];
-        }
-        maxSum = max(maxSum, currSum);
+    ll &ret = dp[total][currInd];
+    if(~ret) return ret;
+
+    ret = solve(currInd+1, total, list, money, dp);
+
+    if(total + list[currInd].first <= money){
+        ret = max(ret, solve(currInd+1, total + list[currInd].first, list, money, dp) + list[currInd].second);
     }
-    return maxSum;
+
+
+    return ret; 
 }
 
-
-void solve()
+void solve(int money, int n)
 {
-    int n, k;
-    cin >> n >> k;
-    vi theorms(n), awake(n);
-    inputVec(theorms);
-    inputVec(awake);
-    ll ans = solve(theorms, awake, k);
-    print(ans);
+    vpll l(n);
+    for(int i = 0; i < n; i++){
+        cin >> l[i].first >> l[i].second;
+    }
+    vvll dp(money+201, vll(n+1, -1));
+    print(
+        solve(0, 0, l, money+200, dp)
+    );
 }
 
 
@@ -66,15 +62,11 @@ int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    cout.tie(NULL);
-    int T;
     #ifndef ONLINE_JUDGE
     freopen("../input.txt", "r", stdin);
     freopen("../output.txt", "w", stdout);
-    T=DEBUG_TEST_CASES;
-    #else
-    T=1;
     #endif
-    while(T--) {solve();}
+    int money, list;
+    while(cin >> money >> list) {solve(money, list);}
     return 0;
 }

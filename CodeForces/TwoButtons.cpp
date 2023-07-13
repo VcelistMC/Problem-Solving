@@ -20,45 +20,40 @@ bool inBounds(int x, int y, int n, int m){ return x >= 0 && y >= 0 && x < n && y
 bool inBounds(int x, int y, vvi &grid){ return inBounds(x, y, grid.size(), grid[0].size()); }
 bool inBounds(pii &p, vvi &grid){ return inBounds(p.first, p.second, grid); }
 const int first25Primes[25] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
-#define DEBUG_TEST_CASES 2
+#define DEBUG_TEST_CASES 3
 
-ll solve(vi &theorms, vi &awake, int k){
-    ll currSum = 0;
-    ll maxSum = 0;
-    for(int i = 0; i < theorms.size(); i++){
-        if(awake[i]) currSum += theorms[i];
-    }
-    int i = 0, j = 0;
-    for(j = 0; j < k; j++) {
-        if(!awake[j]) currSum += theorms[j];
-    }
-    j--;
-    maxSum = currSum;
+int bfs(int n, int m){
+    queue<int> q;
+    q.push(n);
+    unordered_set<int> v;
+    v.insert(n);
+    int steps = 0;
+    while(!q.empty()){
+        int s = q.size();
+        while(s--){
+            int curr = q.front(); q.pop();
+            if(curr == m) return steps;
 
-    while(j < theorms.size()){
-        if(!awake[i]){
-            currSum -= theorms[i];
+            if(curr*2 < 2*m && v.find(curr*2) == v.end()){
+                v.insert(curr*2);
+                q.push(curr*2);
+            }
+
+            if(curr-1 >= 0 && v.find(curr-1) == v.end()){
+                v.insert(curr-1);
+                q.push(curr-1);
+            }
         }
-        i++;
-        j++;
-        if(!awake[j]){
-            currSum += theorms[j];
-        }
-        maxSum = max(maxSum, currSum);
+        steps++;
     }
-    return maxSum;
+    return steps;
 }
-
 
 void solve()
 {
-    int n, k;
-    cin >> n >> k;
-    vi theorms(n), awake(n);
-    inputVec(theorms);
-    inputVec(awake);
-    ll ans = solve(theorms, awake, k);
-    print(ans);
+    int n, m;
+    cin >> n >> m;
+    print(bfs(n, m));
 }
 
 

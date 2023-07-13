@@ -9,6 +9,7 @@ using namespace std;
 #define print(x) cout << x << endl
 #define printGrid(vv) for(auto row: vv){for(auto cell: row){cout << cell << " ";}cout << endl;}
 #define ll long long
+#define exists(x, v) (v.find(x) != v.end())
 typedef vector<int> vi;
 typedef vector<vi> vvi;
 typedef vector<ll> vll;
@@ -20,39 +21,35 @@ bool inBounds(int x, int y, int n, int m){ return x >= 0 && y >= 0 && x < n && y
 bool inBounds(int x, int y, vvi &grid){ return inBounds(x, y, grid.size(), grid[0].size()); }
 bool inBounds(pii &p, vvi &grid){ return inBounds(p.first, p.second, grid); }
 const int first25Primes[25] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
+#define DEBUG_TEST_CASES 1
 
-
-ll dp[205][11][205];
-ll getCount(int currSum, int taken, int currInd, int k, int n, vi &nums){
-    if(taken == n){ return (currSum == 0? 1LL: 0LL); }  
-
+int dp[201][20001];
+bool canPartition(int currInd, int firstSum, vector<int> &nums, int total){
     if(currInd == nums.size()){
-        return 0LL;
-    };
-
-    ll& ans = dp[currInd][taken][currSum];
-    if(~ans) return ans;
-
-    ll take = getCount((currSum + nums[currInd]) % k, taken+1, currInd+1, k, n, nums);
-    ll leave = getCount(currSum, taken, currInd+1, k, n, nums);
-
-    return ans = (take + leave);
-}      
-
-void solve(int n, int q)
-{
-    vi nums(n);
-    inputVec(nums);
-    memset(dp, -1, sizeof dp);
-    int m, d;
-    int i = 1;
-    while(q--){
-        cin >> d >> m;
-        memset(dp, -1, sizeof dp);
-        cout << "QUERY " << i << ": ";
-        i++;
-        print(getCount(0, 0, 0, d, m, nums));
+        return (total - firstSum == firstSum);
     }
+
+    int &ret = dp[currInd][firstSum];
+    if(~ret) return ret;
+
+    bool take = canPartition(currInd+1, firstSum + nums[currInd], nums, total);
+    bool leave = canPartition(currInd+1, firstSum, nums, total);
+
+    return (take || leave);
+}
+
+bool canPartition(vector<int>& nums) {
+    int total = 0;
+    for(int num: nums) total += num;
+    memset(dp, -1, sizeof dp);
+    return canPartition(0, 0, nums, total);
+}
+
+
+void solve()
+{
+    vi in = {1,5,11,5};
+    print(canPartition(in));
 }
 
 
@@ -60,15 +57,15 @@ int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
+    cout.tie(NULL);
+    int T;
     #ifndef ONLINE_JUDGE
     freopen("../input.txt", "r", stdin);
     freopen("../output.txt", "w", stdout);
+    T=DEBUG_TEST_CASES;
+    #else
+    T=1;
     #endif
-    int N, Q, i = 1;
-    while(cin >> N >> Q, N, Q) {
-        cout << "SET " << i << ":" << endl;
-        i++;
-        solve(N, Q);
-    }
+    while(T--) {solve();}
     return 0;
 }

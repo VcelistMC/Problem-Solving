@@ -9,6 +9,7 @@ using namespace std;
 #define print(x) cout << x << endl
 #define printGrid(vv) for(auto row: vv){for(auto cell: row){cout << cell << " ";}cout << endl;}
 #define ll long long
+#define exists(x, v) (v.find(x) != v.end())
 typedef vector<int> vi;
 typedef vector<vi> vvi;
 typedef vector<ll> vll;
@@ -20,45 +21,36 @@ bool inBounds(int x, int y, int n, int m){ return x >= 0 && y >= 0 && x < n && y
 bool inBounds(int x, int y, vvi &grid){ return inBounds(x, y, grid.size(), grid[0].size()); }
 bool inBounds(pii &p, vvi &grid){ return inBounds(p.first, p.second, grid); }
 const int first25Primes[25] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
-#define DEBUG_TEST_CASES 2
+#define DEBUG_TEST_CASES 1
 
-ll solve(vi &theorms, vi &awake, int k){
-    ll currSum = 0;
-    ll maxSum = 0;
-    for(int i = 0; i < theorms.size(); i++){
-        if(awake[i]) currSum += theorms[i];
-    }
-    int i = 0, j = 0;
-    for(j = 0; j < k; j++) {
-        if(!awake[j]) currSum += theorms[j];
-    }
-    j--;
-    maxSum = currSum;
-
-    while(j < theorms.size()){
-        if(!awake[i]){
-            currSum -= theorms[i];
-        }
-        i++;
-        j++;
-        if(!awake[j]){
-            currSum += theorms[j];
-        }
-        maxSum = max(maxSum, currSum);
-    }
-    return maxSum;
+int get(int i, int j, vvi &dp){
+    if(!inBounds(i, j, dp)) return 0;
+    return dp[i][j];
 }
 
+int longestCommonSubsequence(string text1, string text2) {
+    int n = text1.length(), m = text2.length();
+    vvi dp(text1.length(), vi(text2.length(), 0));
+
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < m; j++){
+            if(text1[i] == text2[j]){
+                dp[i][j] = get(i-1, j-1, dp) + 1;
+            }else{
+                dp[i][j] = max(
+                    get(i-1, j, dp),
+                    get(i, j-1, dp)
+                );
+            }
+        }
+    }
+    return dp[n-1][m-1];
+}
 
 void solve()
 {
-    int n, k;
-    cin >> n >> k;
-    vi theorms(n), awake(n);
-    inputVec(theorms);
-    inputVec(awake);
-    ll ans = solve(theorms, awake, k);
-    print(ans);
+    string s1 = "abcde", s2 = "ace";
+    print(longestCommonSubsequence(s1, s2));
 }
 
 
